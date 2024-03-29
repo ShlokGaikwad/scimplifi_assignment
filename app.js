@@ -77,6 +77,7 @@ app.delete("/api/v1/delete_session/:session_id", (req, res) => {
   res.status(200).send("session deleted successfully");
 });
 
+//file delete with index
 app.delete("/api/v1/delete_file/:session_id/:file_idx", (req, res) => {
   const sessionId = req.params.session_id;
   const file_idx = parseInt(req.params.file_idx);
