@@ -34,6 +34,7 @@ app.post("/api/v1/create-session", (req, res) => {
   res.json({ session_id: sessionId });
 });
 
+//upload file and calculate result
 app.post(
   "/api/v1/upload-file/:session_id",
   upload.single("file"),
@@ -68,6 +69,13 @@ app.post(
     res.json({ result: total });
   }
 );
+
+//delete session
+app.delete("/api/v1/delete_session/:session_id", (req, res) => {
+  const sessionId = req.params.session_id;
+  delete sessions[sessionId];
+  res.status(200).send("session deleted successfully");
+});
 
 app.listen(3000, () => {
   console.log("server is running");
