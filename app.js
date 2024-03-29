@@ -31,10 +31,20 @@ app.post("/api/v1/create-session", (req, res) => {
   res.json({ session_id: sessionId });
 });
 
-app.post("/upload", upload.single("file"), (req, res) => {
-  res.json("file uploaded");
-});
+app.post(
+  "/api/v1/upload-file/:session_id",
+  upload.single("file"),
+  (req, res) => {
+    const sessionId = req.params.session_id;
+    // console.log(sessionId);
+    const filePath = req.files.path;
 
-app.listen(4000, () => {
+    
+
+    res.json({ id: sessionId });
+  }
+);
+
+app.listen(3000, () => {
   console.log("server is running");
 });
