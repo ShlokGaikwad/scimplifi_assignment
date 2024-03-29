@@ -1,19 +1,22 @@
 const express = require("express");
 const multer = require("multer");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
 
 //to store session
-const sessions = {};
+let sessions = {};
 
 // multer
 const storage = multer.diskStorage({
-  destination: "uploads/",
+  destination: (req, file, cb) => {
+    cb(null, "./uploads");
+  },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
 });
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
 app.use(express.json());
 
@@ -37,11 +40,32 @@ app.post(
   (req, res) => {
     const sessionId = req.params.session_id;
     // console.log(sessionId);
-    const filePath = req.files.path;
+    const filePath = req.file.path;
 
-    
+    if (!sessions[sessionId]) {
+      return res.status(400).json({ err: "session not found" });
+    }
 
-    res.json({ id: sessionId });
+    const files = sessions[sessionId].files;
+
+    //it will help if files exceeds 15 then drop first file
+    if (files.length >= 15) {
+      files.shift();
+    }
+
+    const calc = fs.readFileSync(filePath, "utf8");
+    files.push({ calc });
+
+    let total = 0;
+    files.forEach((item) => {
+      const res = eval(item.calc);
+      if (!isNaN(res)) {
+        total += res;
+      }
+    });
+
+    sessions[sessionId].result = total;
+    res.json({ result: total });
   }
 );
 
