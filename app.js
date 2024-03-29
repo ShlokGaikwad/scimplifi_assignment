@@ -77,6 +77,28 @@ app.delete("/api/v1/delete_session/:session_id", (req, res) => {
   res.status(200).send("session deleted successfully");
 });
 
+app.delete("/api/v1/delete_file/:session_id/:file_idx", (req, res) => {
+  const sessionId = req.params.session_id;
+  const file_idx = parseInt(req.params.file_idx);
+  const files = sessions[sessionId].files;
+
+  if (files[file_idx]) {
+    files.splice(file_idx, 1);
+
+    let total = 0;
+    files.forEach((item) => {
+      const res = eval(item.calc);
+      if (!isNaN(res)) {
+        total += res;
+      }
+    });
+    sessions[sessionId].result = total;
+    res.json({ result: total });
+  } else {
+    res.status(400).json("file not found");
+  }
+});
+
 app.listen(3000, () => {
   console.log("server is running");
 });
